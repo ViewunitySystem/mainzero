@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Benadering naar 0</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    #canvas {
+      background-color: #222;
+      display: block;
+      margin: 40px auto;
+      border: 2px solid #444;
+    }
+
+    #stopButton {
+      background-color: orange;
+      border: none;
+      color: #111;
+      padding: 12px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 20px;
+      box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3);
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    #stopButton:hover {
+      background-color: #ff9900;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Benadering naar Nul</h1>
+  <canvas id="canvas" width="800" height="200"></canvas>
+  <button id="stopButton">🛑 Stop en ga naar TEL1.nl</button>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const stopButton = document.getElementById("stopButton");
+
+    const midX = canvas.width / 2;
+    const midY = canvas.height / 2;
+    const scale = 300;
+    let n = 0;
+    let running = true;
+    const maxSteps = 50;
+
+    function drawAxis() {
+      ctx.strokeStyle = "#888";
+      ctx.beginPath();
+      ctx.moveTo(0, midY);
+      ctx.lineTo(canvas.width, midY);
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(midX, midY, 4, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    function animate() {
+      if (!running) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawAxis();
+
+      const x_neg = -1 / (2 ** n);
+      const x_pos =  1 / (2 ** n);
+      const delta = x_pos - x_neg;
+
+      // Tekenen van de punten
+      ctx.fillStyle = "#00f";
+      ctx.beginPath();
+      ctx.arc(midX + x_neg * scale, midY, 10, 0, 2 * Math.PI);
+      ctx.fill();
+
+      ctx.fillStyle = "#0f0";
+      ctx.beginPath();
+      ctx.arc(midX + x_pos * scale, midY, 10, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Informatie tonen
+      ctx.fillStyle = "#fff";
+      ctx.font = "16px Arial";
+      ctx.fillText(`Stap n = ${n}`, 10, 20);
+      ctx.fillText(`x₋ = ${x_neg.toFixed(5)}`, 10, 40);
+      ctx.fillText(`x₊ = ${x_pos.toFixed(5)}`, 10, 60);
+      ctx.fillText(`Δ (verschil) = ${delta.toFixed(5)}`, 10, 80);
+
+      n++;
+      if (n > maxSteps) n = 0; // loop opnieuw
+
+      requestAnimationFrame(animate);
+    }
+
+    stopButton.addEventListener("click", () => {
+      running = false;
+      window.location.href = "https://www.tel1.nl";
+    });
+
+    animate();
+  </script>
+</body>
+</html>
